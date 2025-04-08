@@ -1,0 +1,38 @@
+<div class="mt-4" x-data="{ showCardForm: false }">
+    <template x-if="!showCardForm">
+        <button @click="showCardForm = true"
+                class="bg-white text-gray-500 font-bold py-2 px-4 rounded hover:bg-gray-100 transition duration-150 w-full">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                 stroke-width="1.5" stroke="currentColor" class="inline size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+            </svg>
+            Create Card
+        </button>
+    </template>
+    <template x-if="showCardForm">
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="create_card"/>
+            <input type="hidden" name="column_id" value="{{ column.pk }}"/>
+            <textarea name="title" class="p-2 w-full border rounded mt-2"
+                      placeholder="Enter card text"></textarea>
+            <div class="flex space-x-2 mt-2">
+                <button type="submit"
+                        class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-700 transition duration-150 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                         stroke="currentColor" class="w-6 h-6 mr-1">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/>
+                    </svg>
+                    Add Card
+                </button>
+                <button @click="showCardForm = false"
+                        class="bg-gray-500 text-white font-bold py-2 px-2 rounded hover:bg-gray-700 transition duration-150 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                         stroke="currentColor" class="w-6 h-6 mr-1">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </form>
+    </template>
+</div>

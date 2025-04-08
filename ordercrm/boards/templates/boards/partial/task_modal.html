@@ -1,0 +1,128 @@
+<script type="text/javascript">
+    TaskDetailApp = function() {
+        return {
+            title: '{{ object.title|escapejs }}',
+            description: '{{ object.description|escapejs }}',
+            column: {{ object.column.pk }},
+            editTitle: false,
+            editDescription: false,
+            updateTaskField: function(field, value) {
+                const data = new URLSearchParams();
+                data.append(field, value);
+                data.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+                data.append("action", "update_task");
+                fetch("{% url "card_detail" board_id=object.column.board.pk pk=object.pk  %}", {
+                    method: 'post',
+                    body: data,
+                })
+                .then(function(response) {
+                    console.log(response)
+                }) ;
+            }
+        }
+    }
+</script>
+<div x-data="TaskDetailApp()" id="modal-overlay" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white border-4 border-black rounded-lg w-3/4 h-3/4 relative overflow-y-auto">
+        <!-- Sticky Header with Close Button -->
+            <div class="sticky top-0 bg-white z-10 p-4 border-b-2 border-black flex justify-between items-center">
+                <h2 class="text-2xl font-bold">
+                    <span
+                        @click.prevent
+                        @dblclick="
+                            editTitle = true;
+                            $nextTick(() => $refs['edit_title'].focus());"
+                        @click.away="editTitle = false"
+                        x-show="!editTitle"
+                        x-text="title"
+                        class="
+                            select-none
+                            cursor-pointer
+                            font-lg
+                        "></span>
+                    <input
+                        type="text"
+                        x-model="title"
+                        x-show="editTitle"
+                        @click.away="if (editTitle) {editTitle = false; updateTaskField('title', title)}"
+                        @keydown.enter="if (editTitle) {editTitle = false; updateTaskField('title', title)}"
+                        @keydown.window.escape="if (editTitle) {editTitle = false; updateTaskField('title', title)}"
+                        class="
+                            bg-white
+                            focus:outline-none focus:shadow-outline
+                            border border-gray-300
+                            rounded-lg
+                            py-2
+                            px-4
+                            appearance-none
+                            leading-normal
+                            w-128
+                        "
+                        x-ref="edit_title"
+                    />
+                </h2>
+                <a href="{% url "board_detail" pk=board.pk %}" class="text-black font-bold text-2xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-6">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                    </svg>
+                </a>
+            </div>
+        <div class="mb-4 p-6">
+            <label for="column-select" class="block font-bold text-lg mb-2">In List:</label>
+            <select x-model="column" id="column-select"
+                    class="border-2 border-black rounded p-2"
+                    @change="updateTaskField('column_id', column)">
+                {% for column in board.columns.all %}
+                    <option value="{{ column.pk }}" x-bind:selected="column == {{ column.pk }}">{{ column.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="p-6">
+            <label for="description" class="block font-bold text-lg mb-2">Description:</label>
+            <div
+                @click.prevent
+                @dblclick="
+                    editDescription = true;
+                    $nextTick(() => $refs['edit_description'].focus());"
+                @click.away="editDescription = false"
+                x-show="!editDescription"
+                x-text="description.trim()?description.trim():'--NO DESCRIPTION--'"
+                class="select-none cursor-pointer font-lg whitespace-pre-wrap">
+            </div>
+            <textarea
+                class="w-full border-2 border-black rounded p-2"
+                rows="4"
+                x-model="description"
+                x-show="editDescription"
+                @click.away="if (editDescription) {editDescription = false; updateTaskField('description', description)}"
+                @keydown.window.escape="if (editDescription) {editDescription = false; updateTaskField('description', description)}"
+                x-ref="edit_description"
+            ></textarea>
+        </div>
+        <div class="p-6">
+            <form class="mt-4" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create_comment" />
+                <label for="new-comment" class="block font-bold text-lg mb-2">Add a Comment:</label>
+                <textarea id="new-comment" class="w-full border-2 border-black rounded p-2" rows="2"
+                          placeholder="Write your comment..." name="text"></textarea>
+                <div class="flex justify-end">
+                    <button type="submit" id="add-comment" class="mt-2 px-4 py-2 bg-blue-500 text-white font-bold rounded">Add
+                        Comment
+                    </button>
+                </div>
+            </form>
+            {% if object.comments.all %}
+                <h3 class="text-xl font-bold mb-4">Comments:</h3>
+                <div id="comments" class="space-y-4">
+                    {% for comment in object.comments.all %}
+                    <div class="p-4 border-2 border-gray-300 rounded">
+                        <p class="text-sm font-bold">{{ comment.author }}:</p>
+                        <p class="text-sm">{{ comment.text }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

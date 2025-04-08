@@ -1,0 +1,125 @@
+{% extends "accounts/base.html" %}
+
+{% block content %}
+
+    <div class="mt-4 mx-4 rounded-xl overflow-hidden bg-white text-gray-700 text-center">
+        <h1 class="text-5xl font-semibold text-blue-gray-900 mb-4">
+            TaskLeap Register
+        </h1>
+        <p class="font-sans text-base font-light font-normal md:max-w-sm">
+            Get your ducks in a row
+        </p>
+    </div>
+    <div class="p-6">
+        <form method="post" class="flex flex-col gap-4 md:mt-12">
+            {% csrf_token %}
+
+            <!-- Global Errors -->
+            {% for error in form.non_field_errors %}
+                <p class="mt-2 text-red-600 text-xs">
+                {{ error }}
+                </p>
+            {% endfor %}
+
+            <!-- Username -->
+            <div>
+                <label for="username" class="text-sm font-light block font-medium mb-2">
+                    Username
+                </label>
+                <div class="relative w-full h-11">
+                    <input
+                            id="username"
+                            type="text"
+                            name="username"
+                            placeholder="username"
+                            value="{{ form.username.value|default_if_none:"" }}"
+                            class="outline outline-0 w-full h-full font-normal border text-sm px-3 py-3 rounded-md focus:border-2 focus:border-gray-900"
+                    />
+                </div>
+                {% for error in form.username.errors %}
+                <p class="mt-2 text-red-600 text-xs">
+                    *{{ error }}
+                </p>
+                {% endfor %}
+            </div>
+            <!-- /Username -->
+
+            <!-- Email -->
+            <div>
+                <label for="email" class="text-sm font-light block font-medium mb-2">
+                    Email
+                </label>
+                <div class="relative w-full h-11">
+                    <input
+                            id="email"
+                            type="email"
+                            name="email"
+                            placeholder="email@example.com"
+                            value="{{ form.email.value|default_if_none:"" }}"
+                            class="outline outline-0 w-full h-full font-normal border text-sm px-3 py-3 rounded-md focus:border-2 focus:border-gray-900"
+                    />
+                </div>
+                {% for error in form.email.errors %}
+                <p class="mt-2 text-red-600 text-xs">
+                    *{{ error }}
+                </p>
+                {% endfor %}
+            </div>
+            <!-- /Email -->
+
+            <!-- Password -->
+            <div>
+                <label for="password1" class="text-sm font-light block font-medium mb-2">
+                    Password
+                </label>
+                <div class="relative w-full h-11">
+                    <input
+                            id="password1"
+                            type="password"
+                            name="password1"
+                            placeholder="str0ng p@ssword"
+                            value="{{ form.password1.value|default_if_none:"" }}"
+                            class="outline outline-0 w-full h-full font-normal border text-sm px-3 py-3 rounded-md focus:border-2 focus:border-gray-900"
+                    />
+                </div>
+                {% for error in form.password1.errors %}
+                <p class="mt-2 text-red-600 text-xs">
+                    *{{ error }}
+                </p>
+                {% endfor %}
+            </div>
+            <!-- /Password -->
+
+            <!-- Password2 -->
+            <div>
+                <label for="password2" class="text-sm font-light block font-medium mb-2">
+                    Repeat Password
+                </label>
+                <div class="relative w-full h-11">
+                    <input
+                            id="password2"
+                            type="password"
+                            name="password2"
+                            placeholder="repeat password"
+                            value="{{ form.password2.value|default_if_none:"" }}"
+                            class="outline outline-0 w-full h-full font-normal border text-sm px-3 py-3 rounded-md focus:border-2 focus:border-gray-900"
+                    />
+                </div>
+                {% for error in form.password2.errors %}
+                <p class="mt-2 text-red-600 text-xs">
+                    *{{ error }}
+                </p>
+                {% endfor %}
+            </div>
+            <!-- /Password2 -->
+            <div>
+                <input class="select-none font-sans font-bold text-center text-sm py-3 px-8 rounded-lg bg-gray-900 text-white w-full"
+                        type="submit" value="REGISTER"/>
+            </div>
+            <div class="text-sm font-light leading-normal text-inherit text-center mx-auto max-w-[19rem] !font-medium !text-gray-600">
+                <a href="#" class="text-gray-900">Terms of Service</a> & <a href="#" class="text-gray-900">Privacy
+                Policy.</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

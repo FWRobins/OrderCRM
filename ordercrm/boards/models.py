@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.db.models import Prefetch
+from django.db.models import Q
 
 
 User = get_user_model()
@@ -31,6 +33,24 @@ class Board(TimeStampedModel):
             self.order = max_order
 
         super().save(*args, **kwargs)
+    
+    @property
+    def card_count(self):
+        return Card.objects.filter(column__board=self).count()
+
+    @staticmethod
+    def get_available(user):
+        return Board.objects.prefetch_related(
+            Prefetch('invite_set', queryset=Invite.objects.filter(user=user))
+        ).filter(Q(invite__user=user) | Q(owner=user)).distinct()
+
+    @staticmethod
+    def get_favorites(user):
+        # return Board.get_available(user).all()
+        return Board.get_available(user).prefetch_related(
+            Prefetch('favorite', queryset=Favorite.objects.filter(user=user))
+        ).filter(favorite__user=user)
+
 
 
 class Column(TimeStampedModel):
@@ -93,3 +113,18 @@ class Invite(TimeStampedModel):
 
     def __str__(self):
         return f"{self.board.owner} > {self.board.title} > {self.user}"
+
+class Favorite(TimeStampedModel):
+    board = models.ForeignKey(Board, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.board.owner} > {self.board.title} > {self.user}"
+
+class Comment(TimeStampedModel):
+    card = models.ForeignKey(Card, on_delete=models.CASCADE, related_name="comments")
+    author = models.ForeignKey(User, on_delete=models.PROTECT, related_name="comments")
+    text = models.TextField()
+
+    def __str__(self):
+        return f"{self.author} > {self.card} > {self.text}"

@@ -1,0 +1,34 @@
+<form method="post" class="w-72" x-data="{ addColumn: false }">
+    {% csrf_token %}
+    <template x-if="!addColumn">
+        <button @click="addColumn = true"
+                class="border-2 border-black bg-white text-black font-bold py-2 px-4 rounded hover:bg-gray-100 transition duration-150 w-full">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                 stroke="currentColor" class="inline size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+            </svg>
+            Create Column
+        </button>
+    </template>
+    <template x-if="addColumn">
+        <div>
+            <input type="hidden" name="action" value="create_column"/>
+            <input type="text" name="title" x-model="newColumnName" placeholder="Enter column name"
+                   class="p-2 w-full border rounded">
+            <button type="submit"
+                    class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-700 transition duration-150 mt-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                     stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/>
+                </svg>
+            </button>
+            <button @click="addColumn = false"
+                    class="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-gray-700 transition duration-150 mt-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                     stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+    </template>
+</form>
