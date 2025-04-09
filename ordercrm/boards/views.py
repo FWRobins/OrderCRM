@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView, DetailView
 
-from .models import Board, Column, Card
+from .models import Board, Column, Card, Comment
 
 
 @method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch', )

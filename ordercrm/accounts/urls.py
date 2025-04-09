@@ -5,6 +5,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 
 from accounts.views import  RegisterView, dashboard
 
+
 urlpatterns = [
     path('login/', LoginView.as_view(
         template_name="accounts/login.html",

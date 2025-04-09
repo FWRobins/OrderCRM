@@ -36,6 +36,6 @@ urlpatterns = [
     # ), name = 'logout'),
     # path('', dashboard, name="home"),
     path('admin/', admin.site.urls),
-    path('accounts/', include(accounts_urls)),
+    path('accounts/', include(accounts_urls,)),
     path('boards/', include(boards_urls)),
 ]
