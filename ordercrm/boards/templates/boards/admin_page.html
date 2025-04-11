@@ -1,0 +1,82 @@
+{% extends "boards/base.html" %}
+
+{% block content %}
+{% load crispy_forms_tags %}
+    <div class="">
+        <h1>Transfer Check</h1>
+        <ul id="tcheckList">
+            {% for card in cards.all %}
+            {% if card.column.title == 'Done' %}
+            <div class="col-md-8">
+                <li class="btn btn-warning btn-block text-left m-2 p-4">
+                    <span>{{ card.column.title }}, {{ card.column.board.title }}, {{ card.title }}, {{ card.due_date }}, {{ card.modified }}</span>
+                    <button class="btn btn-danger removeable float-right">X</button>
+                </li>
+            </div>
+            {% endif %}
+            {% endfor %}    
+        </ul>
+        <button type="button" class="btn btn-success" id="transferCheckAjax">PHCheck</button>        
+        <!-- <ul>
+            {% for card in cards.all %}
+            <div class="col-md-8">
+                <li class="btn btn-warning btn-block text-left m-2 p-4">
+                    <span>{{ card.column.title }}, {{ card.column.board.title }}, {{ card.title }}, {{ card.due_date }}, {{ card.modified }}</span>
+                    <button class="btn btn-danger removeable float-right">X</button>
+                </li>
+            </div>
+            {% endfor %}
+        </ul> -->
+        <button type="button" class="btn btn-success" id="openTransferAjax">Open Folder</button>
+        <hr>
+
+            <div class="">
+            <h1>Trello Add</h1>
+            <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type="submit" class="btn btn-success" name="trelloadd" onclick=startload()>Submit</button>
+                <button type="button" class="btn btn-success" id="trellotoggle" onclick=trelloSelectAll()>Toggle Select All</button>
+                <button type="button" class="btn btn-success" id="trellotoggle" onclick=trelloClearAll()>Clear Selection</button>
+            </form>
+            </div>
+        <hr>
+    </div>
+    <script>
+        $("#tcheckList").on('click', 'span', function(){
+            var li_text = $(this).text().split(", ");
+            var tf_name = li_text[2];
+            var tf_branch = li_text[1];
+            // alert(li_text);
+            // alert(li_text[0]);
+            navigator.clipboard.writeText(li_text[2]);
+            setTimeout(function(){navigator.clipboard.writeText(li_text[0]);},1000);
+            // var token = {% csrf_token %};
+            $.ajax({
+            method: 'POST',
+            url: 'ajax/getTransferData',
+            data: {
+                'name':tf_name,
+                'branch':tf_branch,
+                'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()
+            },
+            dataType: 'json',
+            success: function(data){
+                navigator.clipboard.writeText(data.transfer);
+                setTimeout(function(){navigator.clipboard.writeText(data.filedata);},1000);
+
+            }
+            });
+
+        });
+        $(".removeable").click(function(){
+            $(this).parent().remove();
+        });
+        $('#openTransferAjax').click(function(){
+            alert('tcheck clicked');
+            $.ajax({
+            url:'ajax/openTransferFolder'
+            });
+        });
+    </script>
+{% endblock %}
